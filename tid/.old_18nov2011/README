@@ -1,0 +1,17 @@
+
+ Trigger Interface/Distribution (TID) Module Library
+
+This library contains routines for access and use of the JLab TID.  It
+also includes routines for operation and access to the JLab SD (Signal
+Distribution) and Jlab CTP (Crate Trigger Processor) via I^2C.
+
+This library and CODA readout lists (Linux only) are in a development
+state (so called BETA version).  This is due to that fact that the
+hardware (and its associated firmware) is still in heavy development.
+
+Any comments or questions, please contact 
+   Bryan Moffit
+   moffit@jlab.org
+   x5660
+
+

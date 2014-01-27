@@ -1,0 +1,143 @@
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/devg3/!svn/ver/292/ftdaq/trunk/apv/daq/src
+END
+GI_Wrapper.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/devg3/!svn/ver/285/ftdaq/trunk/apv/daq/src/GI_Wrapper.cpp
+END
+GI_Event.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/src/GI_Event.cpp
+END
+MPDhi.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/devg3/!svn/ver/287/ftdaq/trunk/apv/daq/src/MPDhi.cpp
+END
+CheckEvents.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/src/CheckEvents.cpp
+END
+GI_V1718.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/devg3/!svn/ver/287/ftdaq/trunk/apv/daq/src/GI_V1718.cpp
+END
+Vme_sis.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/devg3/!svn/ver/292/ftdaq/trunk/apv/daq/src/Vme_sis.cpp
+END
+DaqControl.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/devg3/!svn/ver/276/ftdaq/trunk/apv/daq/src/DaqControl.cpp
+END
+GI_V1495.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/devg3/!svn/ver/292/ftdaq/trunk/apv/daq/src/GI_V1495.cpp
+END
+MPDlo.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/devg3/!svn/ver/292/ftdaq/trunk/apv/daq/src/MPDlo.cpp
+END
+GI_V260.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/src/GI_V260.cpp
+END
+GI_V513.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/src/GI_V513.cpp
+END
+Logger.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/devg3/!svn/ver/266/ftdaq/trunk/apv/daq/src/Logger.cpp
+END
+Test.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/devg3/!svn/ver/266/ftdaq/trunk/apv/daq/src/Test.cpp
+END
+GI_V462.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/devg3/!svn/ver/277/ftdaq/trunk/apv/daq/src/GI_V462.cpp
+END
+GI_Trigger.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/devg3/!svn/ver/292/ftdaq/trunk/apv/daq/src/GI_Trigger.cpp
+END
+Vme_gexvb.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/src/Vme_gexvb.cpp
+END
+Vme_sbsb3.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/src/Vme_sbsb3.cpp
+END
+GI_IO.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/devg3/!svn/ver/287/ftdaq/trunk/apv/daq/src/GI_IO.cpp
+END
+Vme.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/devg3/!svn/ver/266/ftdaq/trunk/apv/daq/src/Vme.cpp
+END
+TConfig.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/devg3/!svn/ver/270/ftdaq/trunk/apv/daq/src/TConfig.cpp
+END
+Rate.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/src/Rate.cpp
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/devg3/!svn/ver/292/ftdaq/trunk/apv/daq/src/Makefile
+END
+Vme_v1718.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/devg3/!svn/ver/291/ftdaq/trunk/apv/daq/src/Vme_v1718.cpp
+END

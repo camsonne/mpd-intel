@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/devg3/!svn/ver/285/ftdaq/trunk/apv/daq/fileio
+END
+testGEMfileio
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/fileio/testGEMfileio
+END
+testGEMfileio.cc
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/fileio/testGEMfileio.cc
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/devg3/!svn/ver/277/ftdaq/trunk/apv/daq/fileio/Makefile
+END
+testout.dat
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/fileio/testout.dat
+END

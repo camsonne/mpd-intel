@@ -1,0 +1,126 @@
+#----------------------------
+# Mapping file card - chamber
+#
+# GEM Prototype Test in Rome
+#
+#----------------------------
+
+version = "0.1";
+
+date="2012:02:09"; // yyyy:mm:dd 
+
+module:            // this is the single GEM module
+(
+# --- module 0
+  {
+    name = "Chamber 0";
+    type = "40x50";
+    position:
+    {
+      x=0.;
+      y=0.;
+      z=0.;
+    };
+
+    card:
+    (
+// x top side
+      {
+        mpd=3;  // 0 ... MPD VME board index (slot number in future release)
+        ch=1;   // 0-15  MPD channel where the fe card is connected
+        pos=1;  // 0...  Position of the card on the module side (relative to the module coordinates, 0=first 128 strips, 1=from strip 128 to 255 ...)
+        side=1; // 0...4 Module size (depends on the definition of the module, see ConfigModule method, even=x, odd=y)
+	used_channels=128; // [optional] number of channels really used in the card, by default all
+	first_element=0;   // [optional] first element (e.g. strip) index connected to the electronics
+	first_channel=0;   // [optional] first electronic channel index connected to a chamber element
+      },
+      {
+        mpd=3;  // 0 ... MPD VME board index (slot number in future release)
+        ch=2;   // 0-15  MPD channel where the fe card is connected
+        pos=3;  // 0...  Position of the card on the module side (relative to the module coordinates, 0=first 128 strips, 1=from strip 128 to 255 ...)
+        side=1; // 0...4 Module size (depends on the definition of the module, see ConfigModule method, even=x, odd=y)
+	used_channels=128; // [optional] number of channels really used in the card, by default all
+	first_element=0;   // [optional] first element (e.g. strip) index connected to the electronics
+	first_channel=0;   // [optional] first electronic channel index connected to a chamber element
+      },
+      {
+        mpd=3;  // 0 ... MPD VME board index (slot number in future release)
+        ch=3;   // 0-15  MPD channel where the fe card is connected
+        pos=5;  // 0...  Position of the card on the module side (relative to the module coordinates, 0=first 128 strips, 1=from strip 128 to 255 ...)
+        side=1; // 0...4 Module size (depends on the definition of the module, see ConfigModule method, even=x, odd=y)
+	used_channels=128; // [optional] number of channels really used in the card, by default all
+	first_element=0;   // [optional] first element (e.g. strip) index connected to the electronics
+	first_channel=0;   // [optional] first electronic channel index connected to a chamber element
+      },
+      {
+        mpd=3;  // 0 ... MPD VME board index (slot number in future release)
+        ch=4;   // 0-15  MPD channel where the fe card is connected
+        pos=7;  // 0...  Position of the card on the module side (relative to the module coordinates, 0=first 128 strips, 1=from strip 128 to 255 ...)
+        side=1; // 0...4 Module size (depends on the definition of the module, see ConfigModule method, even=x, odd=y)
+	used_channels=128; // [optional] number of channels really used in the card, by default all
+	first_element=0;   // [optional] first element (e.g. strip) index connected to the electronics
+	first_channel=0;   // [optional] first electronic channel index connected to a chamber element
+      },
+      {
+        mpd=4;  // 0 ... MPD VME board index (slot number in future release)
+        ch=0;   // 0-15  MPD channel where the fe card is connected
+        pos=1;  // 0...  Position of the card on the module side (relative to the module coordinates, 0=first 128 strips, 1=from strip 128 to 255 ...)
+        side=0; // 0...4 Module size (depends on the definition of the module, see ConfigModule method, even=x, odd=y)
+      },
+      {
+        mpd=4;  // 0 ... MPD VME board index (slot number in future release)
+        ch=1;   // 0-15  MPD channel where the fe card is connected
+        pos=3;  // 0...  Position of the card on the module side (relative to the module coordinates, 0=first 128 strips, 1=from strip 128 to 255 ...)
+        side=0; // 0...4 Module size (depends on the definition of the module, see ConfigModule method, even=x, odd=y)
+      },
+      {
+        mpd=4;  // 0 ... MPD VME board index (slot number in future release)
+        ch=2;   // 0-15  MPD channel where the fe card is connected
+        pos=5;  // 0...  Position of the card on the module side (relative to the module coordinates, 0=first 128 strips, 1=from strip 128 to 255 ...)
+        side=0; // 0...4 Module size (depends on the definition of the module, see ConfigModule method, even=x, odd=y)
+      },
+      {
+        mpd=4;  // 0 ... MPD VME board index (slot number in future release)
+        ch=3;   // 0-15  MPD channel where the fe card is connected
+        pos=7;  // 0...  Position of the card on the module side (relative to the module coordinates, 0=first 128 strips, 1=from strip 128 to 255 ...)
+        side=0; // 0...4 Module size (depends on the definition of the module, see ConfigModule method, even=x, odd=y)
+      },
+      {
+        mpd=4;  // 0 ... MPD VME board index (slot number in future release)
+        ch=4;   // 0-15  MPD channel where the fe card is connected
+        pos=9;  // 0...  Position of the card on the module side (relative to the module coordinates, 0=first 128 strips, 1=from strip 128 to 255 ...)
+        side=0; // 0...4 Module size (depends on the definition of the module, see ConfigModule method, even=x, odd=y)
+      },
+      {
+        mpd=4;  // 0 ... MPD VME board index (slot number in future release)
+        ch=8;   // 0-15  MPD channel where the fe card is connected
+        pos=0;  // 0...  Position of the card on the module side (relative to the module coordinates, 0=first 128 strips, 1=from strip 128 to 255 ...)
+        side=2; // 0...4 Module size (depends on the definition of the module, see ConfigModule method, even=x, odd=y)
+      },
+      {
+        mpd=4;  // 0 ... MPD VME board index (slot number in future release)
+        ch=9;   // 0-15  MPD channel where the fe card is connected
+        pos=2;  // 0...  Position of the card on the module side (relative to the module coordinates, 0=first 128 strips, 1=from strip 128 to 255 ...)
+        side=2; // 0...4 Module size (depends on the definition of the module, see ConfigModule method, even=x, odd=y)
+      },
+      {
+        mpd=4;  // 0 ... MPD VME board index (slot number in future release)
+        ch=10;   // 0-15  MPD channel where the fe card is connected
+        pos=4;  // 0...  Position of the card on the module side (relative to the module coordinates, 0=first 128 strips, 1=from strip 128 to 255 ...)
+        side=2; // 0...4 Module size (depends on the definition of the module, see ConfigModule method, even=x, odd=y)
+      },
+      {
+        mpd=4;  // 0 ... MPD VME board index (slot number in future release)
+        ch=11;   // 0-15  MPD channel where the fe card is connected
+        pos=6;  // 0...  Position of the card on the module side (relative to the module coordinates, 0=first 128 strips, 1=from strip 128 to 255 ...)
+        side=2; // 0...4 Module size (depends on the definition of the module, see ConfigModule method, even=x, odd=y)
+      },
+      {
+        mpd=4;  // 0 ... MPD VME board index (slot number in future release)
+        ch=12;   // 0-15  MPD channel where the fe card is connected
+        pos=8;  // 0...  Position of the card on the module side (relative to the module coordinates, 0=first 128 strips, 1=from strip 128 to 255 ...)
+        side=2; // 0...4 Module size (depends on the definition of the module, see ConfigModule method, even=x, odd=y)
+      }
+    );
+  }
+);

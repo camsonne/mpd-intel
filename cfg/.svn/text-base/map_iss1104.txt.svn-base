@@ -1,0 +1,82 @@
+#----------------------------
+# Mapping file card - chamber
+#----------------------------
+
+version = "0.1";
+
+date="2011:03:01"; // yyyy:mm:dd 
+
+module:            // this is the single GEM module
+(
+# --- module 0
+  {
+    name = "0";
+    type = "40x50";
+    position:
+    {
+      x=0.;
+      y=0.;
+      z=0.;
+    };
+
+    card:
+    (
+// second side
+      {
+        mpd=0;  // 0 ... MPD VME board number
+        ch=8;   // 0-15  MPD channel where the fe card is connected
+        pos=1;  // 0...  Position of the card on the module side (relative to the module coordinates, 0=first 128 strips, 1=from strip 128 to 255 ...)
+        side=1; // 0...4 Module size (depends on the definition of the module, see ConfigModule method, even=x, odd=y)
+      },
+      {
+        mpd=0;  // 0 ...
+        ch=9;   // 0-15
+        pos=3;  // 0-12 ... position      
+        side=1; // module size 0,1,2,3 
+      },
+      {
+        mpd=0;  // 0 ...
+        ch=10;   // 0-15
+        pos=5;  // position      
+        side=1; // module size 0,1,2,3 
+      },
+      {
+        mpd=0;  // 0 ...
+        ch=11;   // 0-15
+        pos=7;  // position      
+        side=1; // module size 0,1,2,3 
+      },
+      {
+        mpd=0;  // 0 ...
+        ch=12;   // 0-15
+        pos=9;  // position      
+        side=1; // module size 0,1,2,3 
+      },
+// third side
+      {
+        mpd=0;  // 0 ...
+        ch=0;   // 0-15
+        pos=6;  // position      
+        side=2; // module size 0,1,2,3 
+      },
+      {
+        mpd=0;  // 0 ...
+        ch=1;   // 0-15
+        pos=4;  // position      
+        side=2; // module size 0,1,2,3 
+      },
+      {
+        mpd=0;  // 0 ...
+        ch=2;   // 0-15
+        pos=2;  // position      
+        side=2; // module size 0,1,2,3 
+      },
+      {
+        mpd=0;  // 0 ...
+        ch=3;   // 0-15
+        pos=0;  // position      
+        side=2; // module size 0,1,2,3 
+      }
+    );
+  }
+);

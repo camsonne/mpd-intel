@@ -1,0 +1,21 @@
+OBJ=Main.o 
+
+DEPS=include/*.h src/libjgi.a src/libmpd.a
+
+EXE=Daq
+CC=g++ 
+CFLAGS=-g -c -Wall -DLINUX -DBLOCK_TRANSFER -DCONTROLLER_SIS3104 -Iinclude
+#CFLAGS=-g -c -Wall -DLINUX -DBLOCK_TRANSFER -DCONTROLLER_CAEN_V1718 -Iinclude
+#CFLAGS=-c -Wall -DLINUX
+#LDFLAGS=-lCAENVME -lconfig++
+LDFLAGS=-L/usr/local/lib -l_sis3100
+
+$(EXE): $(OBJ)
+	$(CC) -o $@ $(OBJ) -Lsrc -ljgi -lmpd -lconfig++ $(LDFLAGS) 
+
+.cpp.o: $(DEPS)
+	$(CC) -o $@ $< $(CFLAGS)
+
+clean:
+	rm -f $(EXE) $(OBJ) *~ *.log
+

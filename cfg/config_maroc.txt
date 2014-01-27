@@ -1,0 +1,224 @@
+[GENERAL]
+maroc_base_addr0 = 0x200
+#maroc_base_addr1 = 0x210
+
+maroc_revision = 3	# MAROC2 =2 , MAROC3 =3
+
+
+initial_out_ch 	= 0
+test_en_odd 	= 0
+test_en_eve 	= 0
+
+auto_trigger 	  	= 0		
+en_discr_auto_trig	= 0	# SELF TRIGGER
+en_ext_auto_trig 	= 1	# EXTERNAL TRIGGER 
+en_zero_supp 		= 0
+
+
+[SLOW CONTROL M2]	#18 bits
+en_ck 		= 1
+cmd_lvds 	= 0
+en_serializer 	= 0
+cmd_lucid 	= 0
+fs_choice 	= 1
+sw_20f 		= 0
+sw_40f 		= 0
+sw_25k 		= 0
+sw_50k 		= 0
+sw_100k 	= 0
+sw_50f 		= 0
+sw_100f 	= 0
+en_adc 		= 0
+h1h2_choice 	= 0
+valid_ch_select = 1
+swss_c2 	= 0
+swss_c1 	= 0
+swss_c0 	= 0
+
+
+
+[SLOW CONTROL M3]  	# 41 bits # ON means  '1', OFF means '0'
+
+cmd_ss 		= 1 	# enable signal at the  SS inputs.Should be ON if you want to DO CHARGE MEASUREMENTS
+cmd_fsb 	= 1	# enable signal at the FSB inputs.Should be ON if you want to USE FSB1 or FSB2
+cmd_fsu 	= 0	# enable signal at the FSU inputs.Should be ON if you want to  use FSU
+
+
+			# Slow Channel
+h1_h2_choice 	= 0 			# choice between first and second T&H for the input of the ADC
+en_adc 		= 0 			# enable ADC conversion inside the ASIC (ON to make the conversion)
+	
+				# RC Buffer 
+swb_buf_250f 	= 1	
+swb_buf_500f 	= 1	
+swb_buf_1p 	= 0 
+swb_buf_2p 	= 0
+				# Slow Shaper
+enable_ss 	= 1 			#Power Supply 
+sw_ss_300f 	= 1 	 
+sw_ss_600f 	= 1	 
+sw_ss_1200f 	= 1
+				#Wilkinson ADC parameters
+enb_out_adc 	= 1			# to use the Wilkinson ADC should be off
+inv_start_gray 	= 0			# to use the Wilkinson ADC should be off
+ramp_8bit 	= 0	
+ramp_10bit 	= 0
+inv_discri_adc 	= 0			#ADC discri output could be inverted (Should be OFF)
+
+
+			# Fast Channel
+valid_dc_fsb2	= 0			#enable FSB2 DC measurements
+valid_dc_fs 	= 1			#enable FSB and FSU DC measurements
+cmd_fsb_fsu 	= 0			# Choice between FSB1 or FSU for the first discri input (with DAC0)
+					# if 0 = FSB	
+					# if 1 = FSU
+
+d1_d2 		= 0			# if 0 trigger from FSB1 and DAC0
+					# if 1 trigger from FSB2 and DAC1
+
+polar_discri 	= 0			# if 0 High polarity of the trigger output			
+					# if 1 Low  polarity of the trigger output
+
+enb_tristate 	= 1			# Enable all trigger outputs. Should be ON to see trigger outputs
+
+small_dac 	= 1			# to decrease the slop of DAC0 (better accuracy)
+
+				#Unipolar FS 
+sw_fsu_100k 	= 0	
+sw_fsu_50k 	= 0	
+sw_fsu_25k 	= 0	
+sw_fsu_40f 	= 1			# better if ON	
+sw_fsu_20f 	= 1			# better if ON
+				#Bipolar FS 
+sw_fsb1_50f 	= 1			# better if ON		
+sw_fsb1_100f 	= 1			# better if ON		
+sw_fsb1_100k 	= 0	
+sw_fsb1_50k 	= 0
+				#Half Gain 
+
+sw_fsb2_50f 	= 1			# better if ON		
+sw_fsb2_100f 	= 0	
+sw_fsb2_100k 	= 0	
+sw_fsb2_50k 	= 0
+
+			#Other
+		
+en_otabg 	= 0	# Power pulsing bit for bandgap (not active on MAROC3 test board)		
+en_dac 		= 0	# Power pulsing bit for DACs    (not active on MAROC3 test board)
+cmd_ck_mux 	= 0	# should be off 
+	
+
+
+
+[DACS]				#In Maroc 2  V(dac) is linear in the range from from 0 to 2560 (0xA00)
+
+dac0 		= 0x000		# 0x800002 FOR MAROC2 are out of linear range! 				
+				# Moreover dac0 (the only DAC used) is set by thr parameters, not by this 
+dac1 		= 0x000		# 0x805501 FOR MAROC2
+dac2 		= 0x000		# 0x80ff01 FOR MAROC2
+
+
+[FE_V2]				# FW revision 2
+
+hit_en0		= 0xFFFFFF
+hit_en1		= 0xFFFFFF
+hit_en2		= 0xFFFFFF
+
+
+			# Trigger interno (selezione algoritmo)
+trig_mode 	= 0 	# 0 = Fast-or, 1 = Mult > 1, 2..3 = TBD
+
+			# Download (selezione modalità di acquisizione)
+daq_mode 	= 0  	# 0 = Acquire all channels, 
+			# 1 = Acquire HIT enabled channels, 
+			# 2 = Acquire over thr channels (Sparse), 
+			# 3 = Acquire no channels
+
+
+			# SPARSE READ OUT 
+
+daq_thr_def 	= 1680	# Soglia default di Sparse Read Out 
+			# (valori maggiori vengono trasferiti, se daq_mode = 2)
+
+			#daq_thr63	= 2000  #  Soglia di ReadOut per uno specifico canale
+			#daq_thr62	= 1500
+			#daq_thr7	= 1502
+			#daq_thr10	= 1503
+
+
+[GAIN_MAP]
+gain_map 	= 0  # use external gain_map_xxx.txt if 1 , default gain if file not found
+
+[GAIN]
+gain0 		= 254  # valid from 0 to next gainXX 
+gain8 		= 254
+gain16 		= 254
+gain24 		= 254
+gain32 		= 254
+gain40 		= 254
+gain48 		= 254
+gain56 		= 254
+
+[DELAY]
+hold1_delay 	= 0   	#Actual delay = 11.5[ns] + hold1_delay * 1.0 [ns]   0<hold1_delay<255
+			#Pay attention because Real_Delay is the one on MAROC2 PARAMETERS
+
+[VME]
+vme_enable 	= 0
+v792n_addr 	= 0x990000
+scaler_limit 	= 1023
+
+[ISSEXT]
+binary_out 	= 1
+test_mode 	= 0
+file_prefix 	= out/1207_btf/test_mrc_hall
+polling_wait_ms = 5 # not used
+
+
+
+time_preset_sec = 1800
+event_preset 	= 18000
+
+channel_enabled_start 	= 0
+channel_enabled_stop 	= 63
+
+
+			
+
+			# MAROC2 PARAMETERS
+			# DAC0 (24 bit: 8 lsb are Mirror(0to255), 16 msb are Thermometer) 
+thr_start 	= 0	#  750 = 1.155 V 
+thr_stop 	= 17	# 1350 = 1.515 V
+thr_step 	= 100	#thr parameter is MAROC3 DAC0. 10 bit from 0 to 1023
+
+gain_default 	= 254
+gain_start  	= 254
+gain_stop 	= 1
+gain_step 	= 1
+
+delay_start 	= 165
+delay_stop 	= 150
+delay_step 	= 50
+
+hit_delay_start = 1	
+hit_delay_stop 	= 1
+hit_delay_step 	= 1
+
+# XY parameters
+# X0 		= 6.0 		# Lower left vertice
+# Y0 		= 50.0 		# Lower left vertice
+X0 		= 25.0
+Y0 		= 69.0
+
+# Xstep 	= 45.78		# H-9500 extreme
+# Ystep 	= 45.78 	# H-9500 extreme
+# Xstep 	= 3.05 		# H-9500 step
+# Ystep 	= 3.05 		# H-9500 step
+
+Xstep 		= 1.9
+Ystep 		= 1.9
+
+nX 		= 1
+nY 		= 1
+
+progress_step 	= 20

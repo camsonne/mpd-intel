@@ -1,0 +1,88 @@
+#
+# Description:  Makefile for sis3801Lib.o
+#   This driver is specific to VxWorks BSPs and must be compiled
+#   with access to vxWorks headers.
+#
+
+#Check Operating system we are using
+ifndef OSNAME
+  OSNAME := $(subst -,_,$(shell uname))
+endif
+
+ifndef ARCH
+  ARCH = VXWORKSPPC
+endif
+
+
+ifeq ($(ARCH),VXWORKSPPC)
+INCDIR=$(WIND_BASE)/target/h
+CC = ccppc
+DEFS = -mcpu=604 -DCPU=PPC604 -DVXWORKS -D_GNU_TOOL -DVXWORKSPPC
+INCS = -Wall -fno-for-scope -fno-builtin -fvolatile -fstrength-reduce -mlongcall -I. -I$(INCDIR)
+
+endif
+
+ifeq ($(ARCH),VXWORKS68K51)
+INCDIR=/usr/local/tornado/68k/target/h
+CC = cc68k
+DEFS = -DCPU=MC68040 -DVXWORKS -DVXWORKS68K51
+INCS = -Wall -mc68020 -fvolatile -fstrength-reduce -nostdinc -I. -I$(INCDIR)
+endif
+
+ifeq ($(OSNAME),Linux)
+LIBDIR = $(CODA)/$(ARCH)/lib
+CFLAGS = -O $(DEFS)
+endif
+
+ifeq ($(ARCH),Linux)
+
+ifndef LINUXVME_LIB
+	LINUXVME_LIB	= $CODA/extensions/linuxvme/libs
+endif
+ifndef LINUXVME_INC
+	LINUXVME_INC	= $CODA/extensions/linuxvme/include
+endif
+CC = g++
+AR = ar
+RANLIB = ranlib
+DEFS = -DJLAB
+INCS = -I. -I${LINUXVME_INC}
+CFLAGS = -O ${DEFS} -O2  -L. -L${LINUXVME_LIB}
+ifdef DEBUG
+CFLAGS += -Wall -g
+endif
+
+
+endif
+
+
+ifeq ($(ARCH),Linux)
+all: echoarch lib3800.a
+else
+all: echoarch sis3800Lib.o
+endif
+
+sis3800Lib.o: sis3800Lib.c sis3800Lib.h
+	$(CC) -c $(CFLAGS) $(INCS) -o $@ sis3800Lib.c
+
+
+lib3800.a: sis3800Lib.o
+	$(CC) -fpic -shared $(CFLAGS) $(INCS) -o libc3800.so sis3800Lib.c
+	$(AR) ruv libc3800.a sis3800Lib.o
+	$(RANLIB) libc3800.a
+
+
+clean:
+	rm -f *.o
+
+echoarch:
+	echo "Make for $(ARCH)"
+
+test.o : test.cpp
+	$(CC) -c $(CFLAGS) $(INCS) -o $@ $^
+
+test : test.o 
+	$(CC)  $(CFLAGS) -ljvme test.o  -o test
+
+initsis : initsis.o sis3800Lib.o
+	$(CC)  $(CFLAGS) -ljvme initsis.o sis3800Lib.o -o $@

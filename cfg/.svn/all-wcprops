@@ -1,0 +1,143 @@
+K 25
+svn:wc:ra_dav:version-url
+V 47
+/svn/devg3/!svn/ver/295/ftdaq/trunk/apv/daq/cfg
+END
+config.template
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/cfg/config.template
+END
+map_iss1104.txt
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/cfg/map_iss1104.txt
+END
+map_iss1105.txt
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/cfg/map_iss1105.txt
+END
+1011_desy_map_one.txt
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/cfg/1011_desy_map_one.txt
+END
+config.txt
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/devg3/!svn/ver/269/ftdaq/trunk/apv/daq/cfg/config.txt
+END
+1108_iss.map
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/cfg/1108_iss.map
+END
+config_default.txt
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/devg3/!svn/ver/285/ftdaq/trunk/apv/daq/cfg/config_default.txt
+END
+config_apv.txt
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/devg3/!svn/ver/295/ftdaq/trunk/apv/daq/cfg/config_apv.txt
+END
+1106_cern_orig.txt
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/cfg/1106_cern_orig.txt
+END
+config_new.txt
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/devg3/!svn/ver/289/ftdaq/trunk/apv/daq/cfg/config_new.txt
+END
+config_apv_default.txt
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/svn/devg3/!svn/ver/295/ftdaq/trunk/apv/daq/cfg/config_apv_default.txt
+END
+config_test_GE.txt
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/devg3/!svn/ver/291/ftdaq/trunk/apv/daq/cfg/config_test_GE.txt
+END
+1110_iss_mpd2.map
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/cfg/1110_iss_mpd2.map
+END
+1108_iss_0.map
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/cfg/1108_iss_0.map
+END
+1108_iss_1.map
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/cfg/1108_iss_1.map
+END
+1109_mainz.map
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/cfg/1109_mainz.map
+END
+1108_iss_2.map
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/cfg/1108_iss_2.map
+END
+1108_iss_3.map
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/cfg/1108_iss_3.map
+END
+last.run
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/devg3/!svn/ver/292/ftdaq/trunk/apv/daq/cfg/last.run
+END
+1106_cern_map.txt
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/cfg/1106_cern_map.txt
+END
+1011_desy_map_two.txt
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/cfg/1011_desy_map_two.txt
+END
+1110_iss.map
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/cfg/1110_iss.map
+END
+1202_iss.map
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/cfg/1202_iss.map
+END

@@ -1,0 +1,65 @@
+************************************************************
+* README
+* 
+*   CODA Readout List using JLab TID as a trigger source
+*   using vxWorks on an PPC VME Controller.
+*
+*  Bryan Moffit (moffit@jlab.org) x5660
+*  Jefferson Lab 
+*  Data Acquisition Group
+*  March 2012
+*
+************************************************************
+
+- Library build
+  In directory tid/, build the library with
+     make
+
+  Be sure that the ARCH is undefined in the Makefile, or defined
+  as VXWORKSPPC
+
+  This library (tidLib.o), must be loaded by the controller, prior
+  to "Download" in CODA.
+
+- Readout list build.
+  Build the example tid_list.o with
+     ./makelist.local tid_list ppc -I../
+
+  The makelist.local must be used to override the GEN_source.h
+  in the CODA distribution with the local modified version.
+
+- Some configurable TID routines/options (see the source for more):
+
+TRIG_ADDR
+  The A24 address of the TID.  By hardware default, this is the VME
+  slot number (in a VME 64X crate), shifted by 19 bits.
+   e.g.  VME Slot  2 = ( 2<<19) = 0x100000
+         VME Slot 21 = (21<<19) = 0xA80000
+
+TRIG_MODE
+  How the TID is triggered:
+   0: External Trigger - Interrupt Mode
+   1: TS/TImaster Trigger - Interrupt Mode
+   2: External Trigger - Polling Mode
+   3: TS/TImaster Trigger - Polling Mode
+
+ 0 or 2 should be used (Master mode) in a single crate system.  TID's configured
+ as SLAVE devices must use 1 or 3.
+
+Set number of events per block 
+  tidSetBlockLevel(1);
+
+For Front panel TS Inputs, 
+ - e.g. Enable TS Input #1 
+   (Unterminated Inputs MUST NOT be enabled)
+  tidDisableTSInput( TID_TSINPUT_ALL );
+  tidEnableTSInput( TID_TSINPUT_1 );
+
+Set the Block Acknowledge threshold 
+  0:  No threshold  -  Pipeline mode
+  1:  One Acknowdge for each Block - "ROC LOCK" mode
+  2-255:  "Buffered" mode.
+  tidSetBlockAckThreshold(1);
+
+Front panel trigger prescale: 2^<arg> 
+  tidSetPrescale(0);

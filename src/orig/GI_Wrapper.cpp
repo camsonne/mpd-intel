@@ -1,0 +1,249 @@
+/*
+ * Interface module to load configuration into the APV and MPD electronics from
+ * the config file
+ *
+ */
+
+#include <iostream>
+#include <iomanip>
+#include <cstdlib>
+#include <string.h>
+
+#include "GI_Wrapper.h"
+
+using namespace std;
+using namespace libconfig;
+
+
+/*
+ * Copy the configuration settings into the internal variables of the MPD object
+ * Must be called before the first access to the MPD boards
+ *
+ * Return the number of MPD settings loaded
+ */
+
+int GI_Wrapper::LoadMPDConfig(GI_Config *gDB,  MPDhi *gMPD, Bus *clink) {
+
+  int i,j,k;
+  int rval;
+  int clock_phase;
+  int mode;
+
+  bool invert;
+  std::string pattern;
+
+  MPDlo *mpd;
+
+  int size, idx, esize;
+
+  int bus = clink->getIndex();
+
+  gMPD->setBusIndex(bus);
+
+  size = gDB->getMPDLength(bus);
+
+  cout << __FUNCTION__ << ": " << size << " MPD elements in config file" << endl;
+
+  esize = 0;
+
+  for(i=0; i<size; i++) { // loop on mpd modules
+
+    idx = gDB->getMPD<int>(rval, "rotary", i, bus);
+
+    cout << __FUNCTION__ << ": Loading mpd settings = "<< i << " rotary = " << idx << endl;
+
+    if (idx < 0) {
+      cout << __FUNCTION__ << ": module " << i << " is disabled (negative rotary) " << endl;
+      continue; // skip mpd setting
+    }
+
+    mpd = new MPDlo(clink, idx, bus);
+
+    gMPD->addModule(mpd);
+
+    mpd->SetZeroLevel((uint16_t) gDB->getMPD<int>(rval, "zero_level", i, bus));
+    mpd->SetOneLevel((uint16_t) gDB->getMPD<int>(rval, "one_level", i, bus));
+
+    mpd->SetSlot(gDB->getMPD<int>(rval, "rotary", i, bus));
+
+    mpd->SetTriggerMode(gDB->getMPD<int>(rval, "calib_latency", i, bus),
+			gDB->getMPD<int>(rval, "trigger_number", i, bus));
+
+    mpd->SetAcqMode(gDB->getRUN<std::string>(rval, "mode"));
+
+
+    mpd->SetInPath(gDB->getMPD<bool>(rval, "en_trig1_P0", i, bus),
+		   gDB->getMPD<bool>(rval, "en_trig2_P0", i, bus),
+		   gDB->getMPD<bool>(rval, "en_trig_Front", i, bus),
+		   gDB->getMPD<bool>(rval, "en_sync_P0", i, bus),
+		   gDB->getMPD<bool>(rval, "en_sync_Front", i, bus));
+
+    short aaa = (short) gDB->getMPD<int>(rval, "common_noise_subtraction", i, bus);
+    mpd->SetCommonNoiseSubtraction(aaa);
+    bool bbb = (gDB->getMPD<int>(rval, "event_building", i, bus) == 0) ? false : true;
+    mpd->SetEventBuilding(bbb);
+    mpd->SetCommonOffset(gDB->getMPD<int>(rval, "common_offset", i, bus));
+
+
+    mpd->SetPedThrCommon(gDB->getMPD<int>(rval,"ped_common",i,bus),
+			 gDB->getMPD<int>(rval,"thr_common",i,bus));
+    mpd->SetPedThrPath(gDB->getMPD<std::string>(rval, "pedthr_file", i, bus));
+
+    mpd->ReadPedThr(); // read ped and thr from file, if t exist
+
+    for (j=0; j<2;j++) { // loop on adc chips in mpd
+
+      clock_phase = gDB->getADC<int>(rval, "clock_phase", j, i, bus);
+
+      /*
+	if( mpd->GetFpgaRevision() < 2 ) {
+	switch (clock_phase) {
+	case 0: 
+	  clock_phase = MPD_APV_CLOCK_PHASE_0;
+	  break;
+	case 1:
+	case 90:
+	  clock_phase = MPD_APV_CLOCK_PHASE_90;
+	  break;
+	case 2:
+	case 180:
+	  clock_phase = MPD_APV_CLOCK_PHASE_180;
+	  break;
+	case 3:
+	case 270:
+	  clock_phase = MPD_APV_CLOCK_PHASE_270;
+	  break;
+	default: 
+	  clock_phase = MPD_APV_CLOCK_PHASE_0;
+	  cout << __FUNCTION__ << " Warning: apv_clk phase error, " << clock_phase << endl;
+	}
+	}
+      */
+
+      mpd->SetAdcClockPhase(j, clock_phase);
+  
+      for (k=0;k<8;k++) { // loop on channel in adc
+	mpd->SetAdcGain(j, k, gDB->getADC<int>(rval, k, "gain", j, i, bus));
+      }
+
+      invert = gDB->getADC<bool>(rval, "invert", j, i, bus);
+      pattern= gDB->getADC<std::string>(rval, "pattern", j, i, bus);
+
+      mpd->SetAdcInvert(j, invert);
+
+      if( pattern == "none" )
+	mpd->SetAdcPattern(j, MPD_ADS5281_PAT_NONE);
+      if( pattern == "sync" )
+	mpd->SetAdcPattern(j, MPD_ADS5281_PAT_SYNC);
+      if( pattern == "deskew" )
+	mpd->SetAdcPattern(j, MPD_ADS5281_PAT_DESKEW);
+      if( pattern == "ramp" )
+	mpd->SetAdcPattern(j, MPD_ADS5281_PAT_RAMP);
+
+    } // end loop on adc
+
+    // i2c interface
+    mpd->SetI2CSpeed(gDB->getI2C<int>(rval, 0, "speed", i, bus));
+    mpd->SetI2CMaxRetry(gDB->getI2C<int>(rval, 0, "timeout", i, bus));
+
+    // fec 
+
+    int asize = gDB->getAPVLength(i,bus);
+    cout << __FUNCTION__ << ": " << asize << " APV elements in given (Bus:MPD) = " << bus << " : " << i << endl;
+ 
+    if (asize>16) {
+      cout << __FUNCTION__ << " / Error: too many APV settings" << endl;
+      exit(1);
+    }
+
+    int js=0;
+
+    int apv_freq, apv_smode;
+    apv_freq = gDB->getMPD<int>(rval, "apv_Frequency", i, bus);
+    apv_smode= gDB->getMPD<int>(rval, "apv_SampleMode", i, bus);
+
+    for(int j=0; j<asize; j++) { // loop on FEC
+      if (gDB->getAPV<int>(rval, "i2c", j, i, bus) < 0) {
+	continue;
+      }
+
+      ApvParameters gApv;
+
+      gApv.i2c = (short) gDB->getAPV<int>(rval, "i2c", j, i, bus); // i2c address
+      gApv.adc = (short) gDB->getAPV<int>(rval, "adc", j, i, bus); // adc channel
+
+      gApv.Ipre    = (unsigned char) gDB->getAPV<int>(rval, "Ipre", j, i, bus);
+      gApv.Ipcasc  = (unsigned char) gDB->getAPV<int>(rval, "Ipcasc", j, i, bus);
+      gApv.Ipsf    = (unsigned char) gDB->getAPV<int>(rval, "Ipsf", j, i, bus);
+      gApv.Isha    = (unsigned char) gDB->getAPV<int>(rval, "Isha", j, i, bus);
+      gApv.Issf    = (unsigned char) gDB->getAPV<int>(rval, "Issf", j, i, bus);
+      gApv.Ipsp    = (unsigned char) gDB->getAPV<int>(rval, "Ipsp", j, i, bus);
+      gApv.Imuxin  = (unsigned char) gDB->getAPV<int>(rval, "Imuxin", j, i, bus);
+      gApv.Ispare  = (unsigned char) gDB->getAPV<int>(rval, "Ispare", j, i, bus);
+      gApv.Ical    = (unsigned char) gDB->getAPV<int>(rval, "Ical", j, i, bus);
+      gApv.Vfp     = (unsigned char) gDB->getAPV<int>(rval, "Vfp",  j, i, bus);
+      gApv.Vfs     = (unsigned char) gDB->getAPV<int>(rval, "Vfs",  j, i, bus);
+      gApv.Vpsp    = (unsigned char) gDB->getAPV<int>(rval, "Vpsp", j, i, bus);
+      gApv.Cdrv    = (unsigned char) gDB->getAPV<int>(rval, "Cdrv", j, i, bus);
+      gApv.Csel    = (unsigned char) gDB->getAPV<int>(rval, "Csel", j, i, bus);
+      gApv.Latency = (unsigned char) gDB->getAPV<int>(rval, "Latency", j, i, bus);
+      gApv.Muxgain = (unsigned char) gDB->getAPV<int>(rval, "Muxgain", j, i, bus);
+
+      mode = (gDB->getAPV<int>(rval, "Polarization", j, i, bus) << 5) |
+	(apv_freq << 4)   |
+	(gDB->getAPV<int>(rval, "ReadOutMode", j, i, bus) << 3) |
+	((1-gDB->getAPV<int>(rval, "CalPulse", j, i, bus)) << 2) | // inhibit calib
+	(apv_smode << 1)  |
+	gDB->getAPV<int>(rval, "AnalogBias", j, i, bus);
+      
+      gApv.Mode = mode;
+
+      mpd->AddApv(gApv);
+      js++;
+    } // end loop on FEC
+    cout << __FUNCTION__ << ": " << js << " APV loaded in current MPD settings" << endl;
+    esize++;
+
+  } // end loop on MPDs
+
+  cout << __FUNCTION__ << ": " << esize << " MPD settings loaded" << endl;
+
+  return esize;
+
+}
+
+/**
+ * Load the configuration settings (run section) in the daq control object
+ *
+ */
+
+void GI_Wrapper::LoadDaqConfig(GI_Config *gDB,  DaqControl *gDAQ) {
+
+  int ret;
+  std::string name;
+
+  name = gDB->getRUN<std::string>(ret, "format");
+  if( name == "hex" )
+    gDAQ->SetDaqFormat(DAQ_HEX);
+  if( name == "dec" )
+    gDAQ->SetDaqFormat(DAQ_DEC);
+  if( name == "bin" )
+    gDAQ->SetDaqFormat(DAQ_BIN);
+
+  gDAQ->SetProgressStep(gDB->getRUN<int>(ret, "progress_step"));
+  gDAQ->SetTimePreset(gDB->getRUN<int>(ret, "time_preset"));
+  gDAQ->SetEventPreset(gDB->getRUN<int>(ret, "event_preset"));
+			
+  gDAQ->SetHistoTime(gDB->getRUN<int>(ret, "histo_time")); // @@@ use time preset in future
+  gDAQ->SetHistoChannelStart(gDB->getRUN<int>(ret, "histo_channel_start")); 
+  gDAQ->SetHistoChannelStop(gDB->getRUN<int>(ret, "histo_channel_stop"));  
+  gDAQ->SetHistoBoard(gDB->getRUN<int>(ret, "histo_board_start"),
+		      gDB->getRUN<int>(ret, "histo_board_stop")); 
+ 
+  gDAQ->SetMaxRetry(gDB->getRUN<int>(ret, "max_retry"));
+
+  gDAQ->SetFilePrefix(gDB->getRUN<std::string>(ret, "file_prefix"));
+
+  gDAQ->SetTimeScaler(gDB->get<int>(ret, "bus", 0, "user", 0, "scaler", 0, "refresh", 0));
+
+}

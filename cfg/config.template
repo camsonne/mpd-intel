@@ -1,0 +1,188 @@
+logfile = "out/Daq.log";
+loglevel = "normal";	// none, normal, verbose
+controller = "v1718"; // v1718, v2718, sis3104, usb, fiber
+
+
+# Configuration parameters
+apv_default_parameter :
+{
+	Ipre = 98;
+	Ipcasc = 52;
+	Ipsf = 34;
+	Isha = 60; //60
+	Issf = 34;
+	Ipsp = 55;
+	Imuxin = 34;
+	Ispare = 0;
+	Ical = 25; // calibration pulse value
+	Vfp = 30;
+	Vfs = 30; //30
+	Vpsp = 25;  //analog baseline, larger the value, smaller the baseline
+	Cdrv = 254;
+	Csel = 1;    // Seems very few effects at scope level: at least 1 bit = 0
+	Latency = 10;// 0..191 A Reset101 is needed after changing this value
+	Muxgain = 4; // 1(-20%), 2(-10%), 4(nominal), 8(+10%), 16(+20%)
+
+/****************************************************
+MODE REGISTER BITS:
+n.      Function        Value = 0       Value = 1
+--------------------------------------------------
+7       Not Used
+6       Not Used
+5       Preamp Pol.     Non-Inverting   Inverting
+4       Read-out Freq.  20MHz           40MHz
+3       Read-out Mode   Deconvolution   Peak
+2       Calibr. Inhibit OFF             ON
+1       Trigger Mode    3-sample        1-sample
+0       Analogue Bias   OFF             ON
+******************************************************/
+
+	Mode = 0x1F;	// PRE_POL_NONINV RO_FREQ_40 RO_MODE_PEAK
+			// CAL_INHIBIT_ON TRIG_MODE_1 ANALOG_BIAS_ON
+
+/*
+	Mode = 0x1B;	// PRE_POL_NONINV RO_FREQ_40 RO_MODE_PEAK
+			// CAL_INHIBIT_OFF TRIG_MODE_1 ANALOG_BIAS_ON
+
+	Mode = 0x3B;	// PRE_POL_INV RO_FREQ_40 RO_MODE_PEAK
+			// CAL_INHIBIT_OFF TRIG_MODE_1 ANALOG_BIAS_ON
+*/
+};
+
+ads5281_default_parameter :
+{
+	gain = 5;		// 0..12 dB
+	invert = true;
+	pattern = "none";	// none, sync, deskew, ramp
+};
+
+board_default_parameter :
+{
+//	apv_enable_mask = 0x001F;
+	apv_clock_phase = __PHASE__ ;	// 0, 90, 180, 270	// ADC board rev 0
+//	apv_clock_phase = 20 ;	// Steps of 0.5 ns	// ADC board rev 1
+//	zero_level = 0x400;
+//	one_level = 0xA00;
+//	zero_level = 400;  // zero logic below this adc value
+	zero_level = 700;  // zero logic below this adc value
+	one_level = 2300;  // one logic above this adc value
+        data_offset = 0;        // Offset added to all data got from APVs (0..4095)
+};
+
+board_parameter :	// Previously defined "board_default_parameter" can be individually overridden here
+(
+	// Adc[0] individual parameters
+	{ 
+	apv_enable_mask = 0x1F0F;
+	}
+	// Adc[0] individual parameters
+//	{ apv_enable_mask = 0x0016;
+//	}
+/*
+	// Adc[0] individual parameters
+	{ apv_enable_mask = 0x0000;
+	},
+	// Adc[1] individual parameters
+	{ apv_enable_mask = 0x0F1F;
+	},
+	// Adc[2] individual parameters
+	{ apv_enable_mask = 0x0F1F;
+	}
+	// Adc[0] individual parameters
+	{ apv_enable_mask = 0x0000;
+	},
+	// Adc[1] individual parameters
+	{ apv_enable_mask = 0x0000;
+	},
+	// Adc[2] individual parameters
+	{ apv_enable_mask = 0x0007;
+	}
+
+	// Adc[0] individual parameters
+	{ apv_enable_mask = 0x0000;
+	},
+	// Adc[1] individual parameters
+	{ apv_enable_mask = 0x0F0A;
+	},
+	// Adc[2] individual parameters
+	{ apv_enable_mask = 0x0F1F;
+	}
+*/
+);
+
+apv_i2c_addr :
+(
+	// Adc[0] APV I2C addresses
+	{	one = 8; two = 9; three = 10; four = 11;
+		five = 0; six = 0; seven = 0; eigth = 0;
+		nine = 16; ten = 17; eleven = 18; twelve = 19;
+		thirteen = 20; fourteen = 0; fifteen = 0; sixteen = 0;
+	}
+/*
+	// Adc[0] APV I2C addresses
+	{	one = 0; two = 25; three = 26; four = 27;
+		five = 28; six = 0; seven = 0; eigth = 0;
+		nine = 16; ten = 17; eleven = 18; twelve = 19;
+		thirteen = 20; fourteen = 0; fifteen = 0; sixteen = 0;
+	}
+	// Adc[0] APV I2C addresses
+	{	one = 0; two = 5; three = 0; four = 0;
+		five = 0; six = 0; seven = 0; eigth = 0;
+		nine = 0; ten = 17; eleven = 0; twelve = 0;
+		thirteen = 20; fourteen = 0; fifteen = 0; sixteen = 0;
+	},
+	// Adc[1] APV I2C addresses
+	{	one = 16; two = 17; three = 18; four = 19;
+		five = 20; six = 0; seven = 0; eigth = 0;
+		nine = 24; ten = 25; eleven = 26; twelve = 27;
+		thirteen = 0; fourteen = 0; fifteen = 0; sixteen = 0;
+	},
+
+	// Adc[1] APV I2C addresses
+	{	one = 0; two = 17; three = 0; four = 19;
+		five = 0; six = 0; seven = 0; eigth = 0;
+		nine = 24; ten = 25; eleven = 26; twelve = 27;
+		thirteen = 0; fourteen = 0; fifteen = 0; sixteen = 0;
+	},
+	// Adc[2] APV I2C addresses
+	{	one = 0; two = 1; three = 2; four = 3;
+		five = 4; six = 0; seven = 0; eigth = 0;
+		nine = 8; ten = 9; eleven = 10; twelve = 11;
+		thirteen = 0; fourteen = 0; fifteen = 0; sixteen = 0;
+	}	
+*/
+);
+
+vme_modules :
+{
+
+};
+	
+# DAQ parameters
+
+file_prefix = "out/iss_1102/ped";
+
+daq_mode = "event";	// event, histo, sample
+daq_format = "bin";	// hex, dec, bin
+
+histo_time = 2;  // second of acquisition for histogramming
+histo_channel_start = 0;	// 0 .. 15
+histo_channel_stop = 14;	// 0 .. 15
+histo_board = 1;	// 0 .. 20
+
+trig_number = 1;	// 0..15 0: disabled, 1: normal, >1: N trigger issued every 3 clock cycles
+calib_latency = 16;     // 0..255: 0: disabled, > 0 issue a calib followed by trigger after given latency
+en_trig1_P0 = false;    // Enable TRIG1 line on P0 connector
+en_trig2_P0 = false;    // Enable TRIG2 line on P0 connector
+en_trig_Front = true;   // Enable TRIGGER line on Front Panel IN0 lemo connector
+en_sync_P0 = false;     // Enable SYNC line on P0 connector
+en_sync_Front = true;   // Enable SYNC line on Front Panel IN1 lemo connector
+
+progress_step = 20;
+time_preset = 300;
+event_preset = 5000;
+max_retry = 1000;	// 0 = disabled
+latency_start = __LATTENCY__;
+latency_stop =  __LATTENCY__;
+latency_step = 1;
+

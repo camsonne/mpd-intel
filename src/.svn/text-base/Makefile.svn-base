@@ -1,0 +1,26 @@
+MPD_OBJ = MPDhi.o MPDlo.o
+MPD_DEPS = MPDhi.h MPDlo.h
+MPD_LIB = libmpd.a
+
+OBJ=GI_V462.o GI_V1495.o GI_V1718.o GI_V260.o GI_V513.o DaqControl.o Logger.o Vme_v1718.o Vme_sis.o GI_Wrapper.o GI_IO.o GI_Trigger.o
+
+DEPS=GI_V1495.h GI_V1718.h GI_V260.h GI_V513.h Bus.h Vme_v1718.h GI_Config.h GI_Wrapper.h GI_IO.h Logger.h DaqControl.h CAENVMElib.h CAENVMEoslib.h CAENVMEtypes.h Vme_sis.h sis1100_var.h sis1100_vme_calls.h GI_Trigger.h GI_Common.h
+
+
+LIB=libjgi.a
+CC=g++ 
+CFLAGS=-g -c -Wall -DLINUX -DBLOCK_TRANSFER -I../include
+LDFLAGS=-lCAENVME -lconfig++
+
+$(MPD_LIB): $(LIB) $(MPD_OBJ)
+	ar cr $(MPD_LIB) $(MPD_OBJ)
+
+$(LIB): $(OBJ)
+	ar cr $(LIB) $(OBJ)
+
+.cpp.o: $(DEPS) $(MPD_DEPS)
+	$(CC) -o $@ $< $(CFLAGS)
+
+clean:
+	rm -f $(MPD_OBJ) $(MPD_LIB) $(EXE) $(OBJ) $(LIB) *~ *.log
+

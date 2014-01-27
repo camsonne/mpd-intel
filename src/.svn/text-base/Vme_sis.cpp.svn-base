@@ -1,0 +1,348 @@
+/* Vme_sis.cpp
+ *
+ * Struck controller SIS 3104 (optical link)
+ *
+ */
+
+#include <unistd.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <fcntl.h>
+#include <sys/ioctl.h>
+
+#include "GI_Common.h"
+#include "Bus.h"
+#include "Vme_sis.h"
+#include "MPDlo.h"
+
+typedef uint64_t u_int64_t;
+typedef uint32_t u_int32_t;
+typedef uint16_t u_int16_t;
+typedef uint8_t u_int8_t;
+
+#include "sis1100_var.h"
+#include "sis3100_vme_calls.h"
+
+#define SIS1100_DEVICE	"/dev/sis1100_00remote"
+
+int VmeSis3104::vme_CSRD32_read(int p, u_int32_t vme_adr, u_int32_t* vme_data )
+{
+	struct sis1100_vme_req req;
+
+	req.size = 4; /* driver does not change any field except data */
+	req.am = 0x2F; /* CR/CSR */
+	req.addr = vme_adr;
+	if( ioctl(p, SIS3100_VME_READ, &req) < 0 )   return -1;        /* NEW */
+	if( req.error ) return req.error ;
+	*vme_data = req.data;    /* NEW */
+	return 0 ;
+}
+
+int VmeSis3104::vme_TurnedOn(void)
+{
+	uint32_t x;
+
+	if( s3100_control_read(Sis3104Handle, 0x0, &x) != 0 )
+	  return 0;
+	GI_MSG("Type-Identifier/Version Register: 0x%08x\n", x);
+	if ((x &0xff) == 0x02) {
+	  GI_MSG("Module Identifier seems correct (%x = SIS31xx controller)\n",x&0xff);
+	} else {
+	  GI_ERR("Module Identifier seems WRONG (%x , 0x2 expected)\n",x&0xff);
+	  return 0;
+	}
+
+	/*
+	  if( s3100_control_read(Sis3104Handle, 0x04, &x) != 0 )
+	  return 0;
+	  printf("Optical Status Register: 0x%08x\n", x);
+	  if( s3100_control_read(Sis3104Handle, 0x80, &x) != 0 )
+	  return 0;
+	  printf("Opt-IN/OUT Register: 0x%08x\n", x);
+	  if( s3100_control_read(Sis3104Handle, 0x84, &x) != 0 )
+	  return 0;
+	  printf("Opt-IN-LATCH Register: 0x%08x\n", x);
+	  if( s3100_control_read(Sis3104Handle, 0x88, &x) != 0 )
+	  return 0;
+	  printf("LEMO-IO Register: 0x%08x\n", x);
+	*/
+	if( s3100_control_read(Sis3104Handle, 0x100, &x) != 0 )
+	  return 0;
+	GI_MSG("OPT-VME Master Status Register: 0x%08x\n", x);
+	if ((x &0x10000) != 0) { // sysyem controller jumper set
+	  x = (x & 0xffff) | 0x1 ; // set system controller bit
+	  s3100_control_write(Sis3104Handle, 0x100, x);
+	}
+	if( s3100_control_read(Sis3104Handle, 0x100, &x) != 0 )
+	  return 0;
+	GI_MSG("OPT-VME Master Status Register: 0x%08x (SYS-CTRL should be ON)\n", x);
+
+	if( s3100_control_read(Sis3104Handle, 0x104, &x) != 0 )
+	  return 0;
+	GI_MSG("OPT-VME Master Interrupt Register: 0x%08x\n", x);
+
+	return 1;
+}
+
+int VmeSis3104::VmeOpen(void)
+{
+
+	Vme_status = 0;
+	Sis3104Handle = open(SIS1100_DEVICE, O_RDWR, 0);
+	if( Sis3104Handle >= 0 )
+	{
+		if( vme_TurnedOn() )
+		{
+			Vme_status = 1;
+			vmesysreset(Sis3104Handle);
+			Sleep(500);
+		}
+	}
+	return Vme_status;
+}
+
+int VmeSis3104::VmeClose(void)
+{
+	close( Sis3104Handle );
+	Vme_status = 0;
+	return 0;
+}
+
+int VmeSis3104::VmeWrite(uint32_t Address, void *Data)
+{
+	uint32_t *p = (uint32_t *) Data;
+	return vme_A32D32_write(Sis3104Handle, Address, p[0]);
+}
+
+int VmeSis3104::VmeRead(uint32_t Address, void *Data)
+{
+	return vme_A32D32_read(Sis3104Handle, Address, (uint32_t *) Data);
+}
+
+int VmeSis3104::VmeBlockWrite(uint32_t Address, int Size, void *Buffer, int *Transferred)
+{
+	return vme_A32BLT32_write(Sis3104Handle, Address, (uint32_t *) Buffer, (uint32_t) Size, (uint32_t *) Transferred);
+}
+
+int VmeSis3104::VmeBlockRead(uint32_t Address, int Size, void *Buffer, int *Transferred)
+{
+	return vme_A32BLT32_read(Sis3104Handle, Address, (uint32_t *) Buffer, (uint32_t) Size, (uint32_t *) Transferred);
+}
+
+int VmeSis3104::VmeFastRead(uint32_t Address, int Size, void *Buffer, int *Transferred)
+{
+	return vme_A32_2EVME_read(Sis3104Handle, Address, (uint32_t *) Buffer, (uint32_t) Size, (uint32_t *) Transferred);
+}
+
+
+int VmeSis3104::SetOutReg(int osel)
+{
+	uint32_t x;
+
+	switch( osel )
+	{
+		case 1: x = 0x1; break;
+		case 2: x = 0x2; break;
+		default: x = 0; break;
+	}
+	return s3100_control_write(Sis3104Handle, 0x80, x);
+}
+
+int VmeSis3104::ClearOutReg(int osel)
+{
+	uint32_t x;
+
+	switch( osel )
+	{
+		case 1: x = 0x10000; break;
+		case 2: x = 0x20000; break;
+		default: x = 0; break;
+	}
+	return s3100_control_write(Sis3104Handle, 0x80, x);
+}
+
+int VmeSis3104::PulseOutReg(int osel)
+{
+	uint32_t x;
+
+	switch( osel )
+	{
+		case 1: x = 0x1000000; break;
+		case 2: x = 0x2000000; break;
+		default: x = 0; break;
+	}
+	return s3100_control_write(Sis3104Handle, 0x80, x);
+}
+
+int VmeSis3104::GetInTransparent(int *isel)
+{
+	uint32_t x, err;
+
+	err = s3100_control_read(Sis3104Handle, 0x80, &x);
+	switch( x & 0x30000 )
+	{
+		case 0x10000: *isel = 1; break;
+		case 0x20000: *isel = 2; break;
+		case 0x30000: *isel = 3; break;
+		default: *isel = -1;
+	}
+	return err;
+}
+
+int VmeSis3104::GetInLatch(int *isel)
+{
+	uint32_t x, err;
+
+	err = s3100_control_read(Sis3104Handle, 0x84, &x);
+	switch( x & 0x3000000 )
+	{
+		case 0x1000000: *isel = 1; break;
+		case 0x2000000: *isel = 2; break;
+		case 0x3000000: *isel = 3; break;
+		default: *isel = -1;
+	}
+	return err;
+}
+
+int VmeSis3104::ClearInLatch(int isel)
+{
+	uint32_t x;
+
+	switch( isel )
+	{
+		case 1: x = 0x1000000; break;
+		case 2: x = 0x2000000; break;
+		case 3: x = 0x3000000; break;
+		default: x = 0; break;
+	}
+	return s3100_control_write(Sis3104Handle, 0x84, x);
+}
+
+/*
+ * flexible read/write but not optimized in speed
+ * NO CR/CSR !!
+ * NO BLOCK READ !!
+ */
+
+int VmeSis3104::Read(int AM, int DT, uint32_t Address, void *Data) {
+
+  switch (AM & 0x30) {
+  case 0x00:       // A32
+    switch (DT) {
+    case giD8: 
+      return vme_A32D8_read(Sis3104Handle, Address, (uint8_t *) Data);
+      break;
+    case giD16:
+      return vme_A32D16_read(Sis3104Handle, Address, (uint16_t *) Data);
+      break;
+    case giD32:
+      return vme_A32D32_read(Sis3104Handle, Address, (uint32_t *) Data);
+      break;
+    default:
+      break;
+    }
+    break;
+  case 0x20:    // A16
+    switch (DT) {
+    case giD8: 
+      return vme_A16D8_read(Sis3104Handle, Address, (uint8_t *) Data);
+      break;
+    case giD16:
+      return vme_A16D16_read(Sis3104Handle, Address, (uint16_t *) Data);
+      break;
+    case giD32:
+      return vme_A16D32_read(Sis3104Handle, Address, (uint32_t *) Data);
+      break;
+    default:
+      break;
+    }
+    break;
+  case 0x30:    // A24
+    switch (DT) {
+    case giD8: 
+      return vme_A24D8_read(Sis3104Handle, Address, (uint8_t *) Data);
+      break;
+    case giD16:
+      return vme_A24D16_read(Sis3104Handle, Address, (uint16_t *) Data);
+      break;
+    case giD32:
+      return vme_A24D32_read(Sis3104Handle, Address, (uint32_t *) Data);
+      break;
+    default:
+      break;
+    }
+    break;
+  default:
+    break;
+  }
+
+  GI_ERR("cannot access AM=0x%x, DT=0x%x\n",AM,DT);
+  return -1;
+
+}
+
+/*
+ */
+
+int VmeSis3104::Write(int AM, int DT, uint32_t Address, void *Data) {
+
+  uint32_t *p32;
+  uint16_t *p16;
+  uint8_t *p8;
+
+  switch (DT) {
+  case giD8: 
+    p8=(uint8_t*) Data;
+    switch (AM & 0x30) {
+    case 0x00: // A32
+      return vme_A32D8_write(Sis3104Handle, Address, p8[0]);
+      break;
+    case 0x20: // A16
+      return vme_A16D8_write(Sis3104Handle, Address, p8[0]);
+      break;
+    case 0x30: // A24
+      return vme_A24D8_write(Sis3104Handle, Address, p8[0]);
+      break;
+    default:
+      break;
+    }
+  case giD16:
+    p16=(uint16_t*) Data;
+    switch (AM & 0x30) {
+    case 0x00: // A32
+      return vme_A32D16_write(Sis3104Handle, Address, p16[0]);
+      break;
+    case 0x20: // A16
+      return vme_A16D16_write(Sis3104Handle, Address, p16[0]);
+      break;
+    case 0x30: // A24
+      return vme_A24D16_write(Sis3104Handle, Address, p16[0]);
+      break;
+    default:
+      break;
+    }
+    break;
+  case giD32:
+    p32 = (uint32_t *) Data;
+    switch (AM & 0x30) {
+    case 0x00: // A32
+      return vme_A32D32_write(Sis3104Handle, Address, p32[0]);
+      break;
+    case 0x20: // A16
+      return vme_A16D32_write(Sis3104Handle, Address, p32[0]);
+      break;
+    case 0x30: // A24
+      return vme_A24D32_write(Sis3104Handle, Address, p32[0]);
+      break;
+    default:
+      break;
+    }
+    break;
+  default:
+    break;
+  }
+
+  GI_ERR("cannot access AM=0x%x, DT=0x%x\n",AM,DT);
+  return -1;
+
+}

@@ -1,0 +1,1 @@
+setenv LD_LIBRARY_PATH site/coda/2.6.2/cMsg/Linux-i686/lib:/site/coda/2.6.2/Linux/lib:/site/coda/2.6.2/cdev_1.7.5/lib/Linux:/root/halla120/coda/linuxvme/lib:/root/halla120/coda/linuxvme/tir:/root/halla120/coda/linuxvme/jvme:/root/halla120/coda/linuxvme/tsUtil:/usr/local/lib:/root/CAENVMELib-2.30.2/lib/x86/:/root/newmpd/final/src:/root/newmpd/final

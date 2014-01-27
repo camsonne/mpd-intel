@@ -1,0 +1,167 @@
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/devg3/!svn/ver/292/ftdaq/trunk/apv/daq/include
+END
+Bus.h
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/devg3/!svn/ver/292/ftdaq/trunk/apv/daq/include/Bus.h
+END
+Vme_v1718.h
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/devg3/!svn/ver/287/ftdaq/trunk/apv/daq/include/Vme_v1718.h
+END
+GI_Wrapper.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/devg3/!svn/ver/276/ftdaq/trunk/apv/daq/include/GI_Wrapper.h
+END
+GI_Event.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/include/GI_Event.h
+END
+MPDhi.h
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/devg3/!svn/ver/282/ftdaq/trunk/apv/daq/include/MPDhi.h
+END
+CAENVMEtypes.h
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/include/CAENVMEtypes.h
+END
+GI_V1718.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/devg3/!svn/ver/287/ftdaq/trunk/apv/daq/include/GI_V1718.h
+END
+CAENVMElib.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/include/CAENVMElib.h
+END
+Vme_sis.h
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/devg3/!svn/ver/292/ftdaq/trunk/apv/daq/include/Vme_sis.h
+END
+DaqControl.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/include/DaqControl.h
+END
+GI_V1495.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/include/GI_V1495.h
+END
+GI_Common.h
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/devg3/!svn/ver/292/ftdaq/trunk/apv/daq/include/GI_Common.h
+END
+CAENVMEoslib.h
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/include/CAENVMEoslib.h
+END
+sis1100_var.h
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/include/sis1100_var.h
+END
+MPDlo.h
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/devg3/!svn/ver/292/ftdaq/trunk/apv/daq/include/MPDlo.h
+END
+GI_V260.h
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/include/GI_V260.h
+END
+GI_V513.h
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/include/GI_V513.h
+END
+Logger.h
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/devg3/!svn/ver/266/ftdaq/trunk/apv/daq/include/Logger.h
+END
+GI_V462.h
+K 25
+svn:wc:ra_dav:version-url
+V 61
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/include/GI_V462.h
+END
+Configure.h
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/include/Configure.h
+END
+GI_Trigger.h
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/devg3/!svn/ver/292/ftdaq/trunk/apv/daq/include/GI_Trigger.h
+END
+Vme_gexvb.h
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/include/Vme_gexvb.h
+END
+Vme_sbsb3.h
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/include/Vme_sbsb3.h
+END
+GI_Config.h
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/devg3/!svn/ver/292/ftdaq/trunk/apv/daq/include/GI_Config.h
+END
+GI_IO.h
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/devg3/!svn/ver/292/ftdaq/trunk/apv/daq/include/GI_IO.h
+END
+Vme.h
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/devg3/!svn/ver/270/ftdaq/trunk/apv/daq/include/Vme.h
+END
+sis3100_vme_calls.h
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/include/sis3100_vme_calls.h
+END

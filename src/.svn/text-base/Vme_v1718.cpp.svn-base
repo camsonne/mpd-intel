@@ -1,0 +1,165 @@
+/* Vme_vx718.cpp
+ */
+
+#include <unistd.h>
+#include <stdint.h>
+
+#include "CAENVMElib.h"
+#include "Vme_v1718.h"
+
+
+int VmeV1718::VmeOpen(void)
+{
+	CVBoardTypes VMEController;
+	short Link;
+	short Device;
+	int success;
+
+	const char scnt[2][10]={"V1718","V2728"};
+
+	VmeError[0] = BUS_OK;
+	VmeError[1] = BUS_ERROR;
+	VmeError[2] = BUS_COMM_ERROR;
+	VmeError[3] = BUS_GENERIC_ERROR;
+	VmeError[4] = BUS_INVALID_PARAM;
+	VmeError[5] = BUS_TIMEOUT;
+
+	Vme_status=0;
+	// test both CAEN controller and run the first that is found
+	for (int i=0;i<2;i++) {
+	  if (i==0) VMEController = cvV1718;
+	  if (i==1) VMEController = cvV2718;
+	  for (Device=0;Device<16;Device++) {
+	    for (Link = 0;Link<16;Link++) {
+	      printf("Check CAEN controller %s, device=%d, link=%d\n",scnt[i],Device,Link);
+	      success = CAENVME_Init(VMEController, Device, Link, &Vx718Handle);
+	      if( success == cvSuccess )
+		{
+		  Sleep(500);
+		  success = CAENVME_SystemReset(Vx718Handle);
+		  Sleep(500);
+		  if( success == cvSuccess ) {
+		    Vme_status = 1;
+		    printf(" .... found controller %s, dev=%d, link=%d!\n",scnt[i],Device,Link);
+		    return success;
+		  }
+		  else
+		    Vme_status = 0;
+		}
+	      else
+	       Vme_status = 0;
+	    }
+	  }
+	}
+	return success;
+}
+
+int VmeV1718::VmeClose(void)
+{
+	return CAENVME_End(Vx718Handle);
+}
+
+int VmeV1718::VmeWrite(uint32_t Address, void *Data)
+{
+	return CAENVME_WriteCycle(Vx718Handle, Address, Data, cvA32_U_DATA, cvD32);
+}
+
+int VmeV1718::VmeRead(uint32_t Address, void *Data)
+{
+	return CAENVME_ReadCycle(Vx718Handle, Address, Data, cvA32_U_DATA, cvD32);
+}
+
+int VmeV1718::VmeWrite(int AM, int DT, uint32_t Address, void *Data)
+{
+  // to be extended
+  return CAENVME_WriteCycle(Vx718Handle, Address, Data, (CVAddressModifier) AM, (CVDataWidth) DT);
+}
+
+int VmeV1718::VmeRead(int AM, int DT, uint32_t Address, void *Data)
+{
+  return CAENVME_ReadCycle(Vx718Handle, Address, Data, (CVAddressModifier) AM, (CVDataWidth) DT);
+}
+
+int VmeV1718::VmeReadCR(uint32_t Address, void *Data) {
+  return CAENVME_ReadCycle(Vx718Handle, Address, Data, cvCR_CSR, cvD32);
+}
+
+int VmeV1718::VmeBlockWrite(uint32_t Address, int Size, void *Buffer, int *Transferred)
+{
+	int x;
+	x =  CAENVME_BLTWriteCycle(Vx718Handle, Address, (unsigned char *)Buffer, Size*4, cvA32_U_BLT, cvD32, Transferred);
+	*Transferred /= 4;
+	return x;
+}
+
+int VmeV1718::VmeBlockRead(uint32_t Address, int Size, void *Buffer, int *Transferred)
+{
+	int x;
+	x =  CAENVME_BLTReadCycle(Vx718Handle, Address, (unsigned char *)Buffer, Size*4, cvA32_U_BLT, cvD32, Transferred);
+	*Transferred /= 4;
+	return x;
+}
+
+
+/*
+ * specific methods of the CAEN interface
+ */
+
+int VmeV1718::SetOutConf(const int osel) {
+
+  return CAENVME_SetOutputConf(Vx718Handle, (CVOutputSelect) osel, 
+			       cvDirect, cvActiveHigh, cvManualSW); 
+  //cvInverted, cvActiveHigh, cvManualSW);
+
+}
+
+int VmeV1718::SetOutReg(int osel) {
+  
+  int mask = 1 << (osel+6);
+  return CAENVME_SetOutputRegister(Vx718Handle, mask); 
+}
+
+int VmeV1718::ClearOutReg(int osel) {
+  
+  int mask = 1 << (osel+6);
+  return CAENVME_ClearOutputRegister(Vx718Handle, mask); 
+
+}
+
+int VmeV1718::PulseOutReg(int osel) {
+
+  int mask = 1 << (osel+6);
+  return CAENVME_PulseOutputRegister(Vx718Handle, mask); 
+
+}
+
+int VmeV1718::SetInConf(const int isel) { // 0 or 1
+
+  return CAENVME_SetInputConf(Vx718Handle, (CVInputSelect) isel, 
+			      cvDirect, cvActiveHigh);
+}
+
+int VmeV1718::ConfScaler(const int isel) { // 0 or 1
+  return CAENVME_SetScalerConf(Vx718Handle, 1024, 1,
+			       (CVIOSources) (isel+1), // channel
+			       cvManualSW, // Gate
+			       cvManualSW); // reset
+}
+
+int VmeV1718::ResetScaler() {
+  return CAENVME_ResetScalerCount(Vx718Handle);
+}
+
+int VmeV1718::EnableScaler() {
+  return CAENVME_EnableScalerGate(Vx718Handle);
+}
+
+int VmeV1718::DisableScaler() {
+  return CAENVME_DisableScalerGate(Vx718Handle);
+}
+
+int VmeV1718::GetScalerCount() {
+  short unsigned int data;
+  CAENVME_ReadRegister(Vx718Handle, cvScaler1, &data);
+  return (int) (data & 0x3FF);
+}

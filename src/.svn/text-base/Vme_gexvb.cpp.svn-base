@@ -1,0 +1,162 @@
+/*
+ * Vme JLab Intel Controller
+ */
+
+#include <unistd.h>
+#include <stdint.h>
+
+#include "jvme.h"
+
+#include <string.h>
+#include <pthread.h>
+
+
+#include "CAENVMElib.h"
+#include "Vme_intel.h"
+#include "AdcVme64x.h"
+
+/* Mutex to guard flexio read/writes */
+pthread_mutex_t   giMutex = PTHREAD_MUTEX_INITIALIZER;
+#define DSCLOCK     pthread_mutex_lock(&giMutex);
+#define DSCUNLOCK   pthread_mutex_unlock(&giMutex);
+
+int VmeBus::VmeOpen(void)
+{
+	CVBoardTypes VMEController;
+	short Link;
+	short Device;
+	int success;
+
+	VMEController = cvV1718;
+	Device = 0;
+	Link = 0;
+	success = CAENVME_Init(VMEController, Device, Link, &V17x8Handle);
+	if( success == cvSuccess )
+	{
+		Sleep(500);
+		success = CAENVME_SystemReset(V17x8Handle);
+		Sleep(500);
+		if( success == cvSuccess )
+			Vme_status = 1;
+		else
+			Vme_status = 0;
+	}
+	else
+		Vme_status = 0;
+	return success;
+}
+
+int VmeBus::VmeClose(void)
+{
+	return CAENVME_End(V17x8Handle);
+}
+
+int VmeBus::VmeCRScan(int slot, uint32_t *rev_id, uint32_t *timec) // must go in GI_MPD
+{
+	uint32_t cr_data, addr;
+	uint32_t j;
+	int success;
+	int cr_len = 9;
+	uint32_t cr_data_OK[13] = {'C', 'R',
+					0x08, 0x00, 0x30,		// Manufacturer ID (CERN)
+					0x00, 0x03, 0x09, 0x04,		// Board ID
+					0x00, 0x00, 0x00, 0x01 };	// Revision ID
+
+	uint32_t CrCsrBaseAddr[MAX_BOARDS] = 
+	{	0x00000000,	// NOT USED
+		0x00080000,
+		0x00100000,
+		0x00180000,
+		0x00200000,
+		0x00280000,
+		0x00300000,
+		0x00380000,
+		0x00400000,
+		0x00480000,
+		0x00500000,
+		0x00580000,
+		0x00600000,
+		0x00680000,
+		0x00700000,
+		0x00780000,
+		0x00800000,
+		0x00880000,
+		0x00900000,
+		0x00980000,
+		0x00A00000,
+		0x00000000	// DESY trial on VME 32
+	};
+
+	*rev_id = 0;
+	if( slot < 1 || slot > (MAX_BOARDS-1) )
+		return cvInvalidParam;
+	addr = CrCsrBaseAddr[slot] + 0x1C;
+	for(j=0; j<cr_len; j++)
+	{
+		success = CAENVME_ReadCycle(V17x8Handle, addr, &cr_data, cvCR_CSR, cvD32);
+		// printf("%x ", cr_data);
+		if( success != cvSuccess )
+			return success;
+		// printf(" %d / %d : 0x%x\n",slot, j, cr_data);
+		if( cr_data != cr_data_OK[j] )
+			return -5;
+		addr += 4;
+	}
+	for(j=0; j<4; j++)
+	{
+		success = CAENVME_ReadCycle(V17x8Handle, addr, &cr_data, cvCR_CSR, cvD32);
+		*rev_id <<= 8;
+		*rev_id |= (cr_data & 0xFF);
+		addr += 4;
+		if( success != cvSuccess )
+			return success;
+	}
+	//printf("\n");
+	*timec = 0;
+	if( *rev_id > 1 )
+	{
+		addr = CrCsrBaseAddr[slot] + 0x5C;
+		for(j=0; j<4; j++)
+		{
+			success = CAENVME_ReadCycle(V17x8Handle, addr, &cr_data, cvCR_CSR, cvD32);
+			*timec <<= 8;
+			*timec |= (cr_data & 0xFF);
+			addr += 4;
+			if( success != cvSuccess )
+				return success;
+		}
+	}
+	return cvSuccess;
+}
+
+int VmeBus::VmeWrite(uint32_t Address, void *Data)
+{
+	return CAENVME_WriteCycle(V17x8Handle, Address, Data, cvA32_U_DATA, cvD32);
+}
+
+int VmeBus::VmeRead(uint32_t Address, void *Data)
+{
+	return CAENVME_ReadCycle(V17x8Handle, Address, Data, cvA32_U_DATA, cvD32);
+}
+
+int VmeBus::VmeWrite(int AM, int DT, uint32_t Address, void *Data)
+{
+
+  // to be extended
+  return CAENVME_WriteCycle(V17x8Handle, Address, Data, (CVAddressModifier) AM, (CVDataWidth) DT);
+}
+
+int VmeBus::VmeRead(int AM, int DT, uint32_t Address, void *Data)
+{
+  return CAENVME_ReadCycle(V17x8Handle, Address, Data, (CVAddressModifier) AM, (CVDataWidth) DT);
+}
+
+int VmeBus::VmeBlockWrite(uint32_t Address, int Size, void *Buffer, int *Transferred)
+{
+	return CAENVME_BLTWriteCycle(V17x8Handle, Address, (unsigned char *)Buffer, Size, cvA32_U_BLT, cvD32, Transferred);
+}
+
+int VmeBus::VmeBlockRead(uint32_t Address, int Size, void *Buffer, int *Transferred)
+{
+	return CAENVME_BLTReadCycle(V17x8Handle, Address, (unsigned char *)Buffer, Size, cvA32_U_BLT, cvD32, Transferred);
+}

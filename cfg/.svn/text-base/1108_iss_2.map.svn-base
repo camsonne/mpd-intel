@@ -1,0 +1,104 @@
+#----------------------------
+# Mapping file card - chamber
+#
+# GEM Prototype Test at CERN
+#----------------------------
+
+version = "0.1";
+
+date="2011:06:27"; // yyyy:mm:dd 
+
+module:            // this is the single GEM module
+(
+# --- module 0
+  {
+    name = "Chamber 1";
+    type = "10x10";
+    position:
+    {
+      x=0.;
+      y=0.;
+      z=0.;
+    };
+
+    card:
+    (
+// x bottom side
+      {
+        mpd=3;  // 0 ... MPD VME board index (slot number in future release)
+        ch=2;   // 0-15  MPD channel where the fe card is connected (apv_i2c_addr - 1)
+        pos=0;  // 0...  Position of the card on the module side (relative to the module coordinates, 0=first 128 strips, 1=from strip 128 to 255 ...)
+        side=0; // 0...4 Module size (depends on the definition of the module, see ConfigModule method, even=x, odd=y)
+      },
+      {
+        mpd=3;  // 0 ...
+        ch=3;   // 0-15
+        pos=1;  // 0-12 ... position      
+        side=0; // module size 0,1,2,3 
+	used_channels=128; // [optional] number of channels really used in the card, by default all
+	first_element=0;   // [optional] first element (e.g. strip) index connected to the electronics (only used if used_channels != total card channels)
+	first_channel=0;   // [optional] first electronic channel index connected to a chamber element (only used if used_channels != total card channels)
+      }
+    );
+  },
+# --- module 1
+  {
+    name = "Chamber 2";
+    type = "10x10";
+    position:
+    {
+      x=0.;
+      y=0.;
+      z=100.;
+    };
+
+    card:
+    (
+      {
+        mpd=2;  // 0 ...
+        ch=3;   // 0-15
+        pos=0;  // position      
+        side=0; // module size 0,1,2,3 
+      },
+      {
+        mpd=2;  // 0 ...
+        ch=4;   // 0-15
+        pos=1;  // position      
+        side=0; // module size 0,1,2,3 
+      },
+      {
+        mpd=2;  // 0 ...
+        ch=10;   // 0-15
+        pos=0;  // position      
+        side=1; // module size 0,1,2,3 
+      }
+    );
+  },
+# --- module 2
+  {
+    name = "Chamber 3";
+    type = "10x10";
+    position:
+    {
+      x=0.;
+      y=0.;
+      z=50.;
+    };
+
+    card:
+    (
+      {
+        mpd=3;  // 0 ...
+        ch=10;   // 0-15
+        pos=0;  // position      
+        side=0; // module size 0,1,2,3 
+      },
+      {
+        mpd=3;  // 0 ...
+        ch=11;   // 0-15
+        pos=1;  // position      
+        side=0; // module size 0,1,2,3 
+      }
+    );
+  }
+);

@@ -1,0 +1,327 @@
+# 
+#  User readout list using a TID as a trigger source
+#
+#    Bryan Moffit, TJNAF 2012
+#
+
+readout list GEN_USER
+maximum 1024,512
+general readout
+
+# A24 Address for TID Module (0x100000 for VME Slot 2)
+const TRIG_ADDR=0x100000
+# TRIG_MODE=0 for interrupt mode
+const TRIG_MODE=0
+
+const BLOCKLEVEL=1
+const NFADC=1
+const MAXFADCWORDS=225
+const FADC_ADDR=0xed0000
+const FADC_THRESHOLD=3300
+const FADC_WINDOW_LAT=300
+const FADC_WINDOW_WIDTH=50
+
+extern int bigendian_out;
+extern unsigned tidIntCount;
+
+############################################################
+# DOWNLOAD
+############################################################
+begin download
+
+variable iFlag
+
+# When sending to a Linux Host set bigendian_out = 0
+bigendian_out = 0;
+
+%%
+{
+  /***************************************
+   * TID Setup 
+   ***************************************/
+  tidInit(TRIG_ADDR,TRIG_MODE,0);
+
+  /* 
+   * Set the trigger source:
+   *  2: Front Panel TRG
+   *  3: Front Panel TS Inputs
+   *  5: Internal Pulser
+   */
+  tidSetTriggerSource(3);
+
+  /* Set number of events per block */
+  tidSetBlockLevel(BLOCKLEVEL);
+
+  /* 
+   * For Front panel TS Inputs, 
+   * - Enable TS Input #1 
+   *
+   * Unterminated Inputs MUST NOT be enabled.
+   */
+  tidDisableTSInput( TID_TSINPUT_ALL );
+  tidEnableTSInput( TID_TSINPUT_1 );
+
+  /* 
+   * Load the trigger table that associates 
+   *  TS#1 | TS#2 | TS#3 : trigger1
+   *  TS#4 | TS#5 | TS#6 : trigger2 (playback trigger)
+   */
+  tidLoadTriggerTable();
+
+  /* 
+   * Trigger Holdoff rule "1":
+   *  - No more than "1" trigger within "5"*16ns 
+   *  Trigger Holdoff rule 2
+   *  - No more than "2" triggers within "10"*16ns 
+   */
+  tidSetTriggerHoldoff(1,5);
+  tidSetTriggerHoldoff(2,10);
+
+  /* 
+   * Set the Block Acknowledge threshold 
+   *  0:  No threshold  -  Pipeline mode
+   *  1:  One Acknowdge for each Block - "ROC LOCK" mode
+   *  2-255:  "Buffered" mode.
+   */
+  tidSetBlockAckThreshold(1);
+
+  /* Override the busy source set in tidInit */
+  tidSetBusySource(TID_BUSY_LOOPBACK,1);
+  /* Disable readout of the TID */
+  tidDisableA32();
+
+
+  /* Front panel trigger prescale: 2^<arg> */
+  tidSetPrescale(0);
+
+  /*  Set delay parameters to minimize trigger time out on front panel */
+  tidSetFiberDelay(2,4);
+  tidSetSyncDelayWidth(0x4, 0x3f);
+
+  /***************************************
+   * FADC Setup 
+   ***************************************/
+  /* Setup the iFlag.. flags for FADC initialization */
+  iFlag=0xea00;    /* high 10 bits for Signal Distribution module */
+  /* Sync Source */
+  iFlag |= (1<<0);    /* FP */
+  /* Trigger Source */
+  iFlag |= (1<<1);    /* FP */
+  /* Clock Source */
+  iFlag |= (1<<4);    /* FP */
+
+  faInit(FADC_ADDR,0,1,iFlag);
+
+  /* Set the internal DAC level */
+  faSetDAC(0,FADC_THRESHOLD,0);
+  /* Set the threshold for data readout */
+  faSetThreshold(0,FADC_THRESHOLD,0);
+	
+  /*  Setup option 1 processing - RAW Window Data     <-- */
+  /*        option 2            - RAW Pulse Data */
+  /*        option 3            - Integral Pulse Data */
+  /*  Setup 200 nsec latency (PL  = 50)  */
+  /*  Setup  80 nsec Window  (PTW = 20) */
+  /*  Setup Pulse widths of 36ns (NSB(3)+NSA(6) = 9)  */
+  /*  Setup up to 1 pulse processed */
+  /*  Setup for both ADC banks(0 - all channels 0-15) */
+  /* Integral Pulse Data */
+  faSetProcMode(0,3,FADC_WINDOW_LAT,FADC_WINDOW_WIDTH,3,6,1,0);
+
+  /* Enable trigger out on front panel */
+  faEnableTriggerOut(0,0);
+	
+  /* Bus errors to terminate block transfers (preferred) */
+  faEnableBusError(0);
+  /* Set the Block level */
+  faSetBlockLevel(0,BLOCKLEVEL);
+
+}
+%%
+
+  log inform "User Download Executed"
+
+end download
+    
+############################################################
+# PRESTART
+############################################################
+begin prestart
+
+  log inform "Entering User Prestart"
+%%
+{
+  /* Reset the TID Clock and Trigger Links at the START of Prestart */
+  tidClockReset();
+  taskDelay(2);
+  tidSyncReset();
+  taskDelay(2);
+  tidTrigLinkReset();
+}
+%%
+
+init trig source GEN
+link async trig source GEN 1 to tidtrig and tidtrig_done
+event type 1 then read GEN 1
+
+%%
+{
+  /* FADC Perform some resets, status */
+  faResetToken(0);
+  faResetTriggerCount(0);
+  faStatus(0,0);
+
+}
+%%
+
+  log inform "User Prestart Executed"
+
+end prestart
+
+############################################################
+# END
+############################################################
+begin end
+
+%%
+{
+  CDODISABLE(GEN,1,0);
+  tidDisableRandomTrigger();
+
+  /* FADC Disable */
+  faDisable(0,0);
+  faStatus(0,0);
+
+  tidStatus();
+  printf("Interrupt Count: %8d \n",tidIntCount);
+}
+%%
+
+  log inform "User End Executed"
+
+end end
+
+############################################################
+# PAUSE
+############################################################
+begin pause
+
+  CDODISABLE(GEN,1,0);
+
+  log inform "User Pause Executed"
+
+end pause
+
+############################################################
+# GO
+############################################################
+begin go
+  
+  log inform "Entering User Go"
+  
+%%
+{
+  tidStatus();
+
+  /* Send a SYNC to the FADC */
+  faSDC_Sync();
+
+  taskDelay(1);
+
+  CDOENABLE(GEN,1,0);
+
+  /*  Enable FADC */
+  faGEnable(0,0);
+
+/* A couple ways to activate the internal pulser */
+/*   tidSoftTrig(0xffff,200,1); */
+/*   tidSetRandomTrigger(7); /\* ~ 4kHz *\/ */
+}
+%%
+
+  log inform "User Go Executed"
+
+end go
+
+############################################################
+# TRIGGER
+############################################################
+begin trigger tidtrig
+  variable dCnt,itime,stat
+
+  rol->dabufp = (long *) 0;
+  open event type EVTYPE of BT_UI4
+
+%%
+{
+  if(__the_event__ == (DANODE*)0)
+    {
+      logMsg("primary rol: error here\n");
+    }
+
+  if(rol->dabufp != NULL)
+    {
+
+      /* No readout of TID, decrement proper TID counters */
+      tidResetBlockReadout();
+
+      /* Readout FADC */
+      if(NFADC!=0)
+	{
+	  for(itime=0;itime<100;itime++) 
+	    {
+	      stat = faBready(0);
+	      if (stat>0) 
+		{
+		  break;
+		}
+	    }
+	  if(stat>0) 
+	    {
+	      dCnt = faReadBlock(0,rol->dabufp,MAXFADCWORDS,1);
+	      if(dCnt<=0)
+		{
+		  logMsg("FADC%d: No data or error.  dCnt = %d\n",0,dCnt);
+		}
+	      else
+		{
+		  rol->dabufp += dCnt;
+		}
+	    } 
+	  else 
+	    {
+	      logMsg("FADC%d: no events   stat=%d  intcount = %d \n",
+		      0,stat,tidGetIntCount());
+	    }
+
+	}
+
+    }
+  else
+    {
+      logMsg("tid_list: ERROR: rol->dabufp is NULL\n");
+    }
+
+}
+%%
+
+ close event
+
+end trigger
+
+begin done tidtrig
+
+end done
+
+############################################################
+# DONE (TRIGGER ACKNOWLEDGE)
+############################################################
+begin done
+  CDOACK(GEN,1,0);
+end done
+
+begin status
+
+end status
+
+

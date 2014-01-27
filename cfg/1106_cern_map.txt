@@ -1,0 +1,140 @@
+#----------------------------
+# Mapping file card - chamber
+#
+# GEM Prototype Test at CERN
+#----------------------------
+
+version = "0.1";
+
+date="2011:06:27"; // yyyy:mm:dd 
+
+module:            // this is the single GEM module
+(
+# --- module 0
+  {
+    name = "0";
+    type = "40x50";
+    position:
+    {
+      x=0.;
+      y=0.;
+      z=0.;
+    };
+
+    card:
+    (
+// x bottom side
+      {
+        mpd=0;  // 0 ... MPD VME board number (slot number in future release)
+        ch=12;   // 9-15  MPD channel where the fe card is connected
+        pos=0;  // 0...  Position of the card on the module side (relative to the module coordinates, 0=first 128 strips, 1=from strip 128 to 255 ...)
+        side=0; // 0...4 Module size (depends on the definition of the module, see ConfigModule method, even=x, odd=y)
+      },
+      {
+        mpd=0;  // 0 ...
+        ch=11;   // 0-15
+        pos=2;  // 0-12 ... position      
+        side=0; // module size 0,1,2,3 
+      },
+      {
+        mpd=0;  // 0 ...
+        ch=10;   // 0-15
+        pos=4;  // position      
+        side=0; // module size 0,1,2,3 
+      },
+      {
+        mpd=0;  // 0 ...
+        ch=9;   // 0-15
+        pos=6;  // position      
+        side=0; // module size 0,1,2,3 
+      },
+      {
+        mpd=0;  // 0 ...
+        ch=8;   // 0-15
+        pos=8;  // position      
+        side=0; // module size 0,1,2,3 
+      },
+// y right side (beam coming from the back)
+      {
+        mpd=1;  // 0 ...
+        ch=4;   // 0-15
+        pos=0;  // position      
+        side=1; // module size 0,1,2,3 
+      },
+      {
+        mpd=1;  // 0 ...
+        ch=3;   // 0-15
+        pos=2;  // position      
+        side=1; // module size 0,1,2,3 
+      },
+      {
+        mpd=1;  // 0 ...
+        ch=2;   // 0-15
+        pos=4;  // position      
+        side=1; // module size 0,1,2,3 
+      },
+      {
+        mpd=1;  // 0 ...
+        ch=1;   // 0-15
+        pos=6;  // position      
+        side=1; // module size 0,1,2,3 
+      },
+// x - upper side
+      {
+        mpd=1;  // 0 ...
+        ch=8;   // 0-15
+        pos=1;  // position      
+        side=2; // module size 0,1,2,3 
+      },
+      {
+        mpd=1;  // 0 ...
+        ch=9;   // 0-15
+        pos=3;  // position      
+        side=2; // module size 0,1,2,3 
+      },
+      {
+        mpd=1;  // 0 ...
+        ch=10;   // 0-15
+        pos=5;  // position      
+        side=2; // module size 0,1,2,3 
+      },
+      {
+        mpd=1;  // 0 ...
+        ch=11;   // 0-15
+        pos=7;  // position      
+        side=2; // module size 0,1,2,3 
+      },
+      {
+        mpd=1;  // 0 ...
+        ch=12;   // 0-15
+        pos=9;  // position      
+        side=2; // module size 0,1,2,3 
+      },
+// y left side
+      {
+        mpd=0;  // 0 ...
+        ch=0;   // 0-15
+        pos=1;  // position      
+        side=3; // module size 0,1,2,3 
+      },
+      {
+        mpd=0;  // 0 ...
+        ch=1;   // 0-15
+        pos=3;  // position      
+        side=3; // module size 0,1,2,3 
+      },
+      {
+        mpd=0;  // 0 ...
+        ch=3;   // 0-15
+        pos=5;  // position      
+        side=3; // module size 0,1,2,3 
+      },
+      {
+        mpd=0;  // 0 ...
+        ch=4;   // 0-15
+        pos=7;  // position      
+        side=3; // module size 0,1,2,3 
+      }
+    );
+  }
+);

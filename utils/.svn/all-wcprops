@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/devg3/!svn/ver/289/ftdaq/trunk/apv/daq/utils
+END
+mlop.sh
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/utils/mlop.sh
+END
+BaselinePlot.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/devg3/!svn/ver/266/ftdaq/trunk/apv/daq/utils/BaselinePlot.cpp
+END
+DoTar.sh
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/utils/DoTar.sh
+END
+loop.sh
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/devg3/!svn/ver/264/ftdaq/trunk/apv/daq/utils/loop.sh
+END
+Plot1stSample.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 67
+/svn/devg3/!svn/ver/289/ftdaq/trunk/apv/daq/utils/Plot1stSample.cpp
+END
